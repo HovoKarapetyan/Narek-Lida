@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ալբերտ & Մարիամ  Հարսանեկան Հրավիրատոմս</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Marck+Script&family=Noto+Serif+Armenian:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <style>
+        /* ----- RESET & BASE ----- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background-color: #f3ede3;
+            font-family: 'Noto Serif Armenian', serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .site-wrapper {
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto;
+            background: #f3ede3;
+            position: relative;
+            min-height: 100vh;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ----- MUSIC BUTTON ----- */
+        .music-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 999;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(180, 150, 100, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7a623f;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+            font-size: 18px;
+        }
+        .music-btn.playing i {
+            animation: spin 4s linear infinite;
+        }
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ----- ENVELOPE SCREEN ----- */
+        .envelope-screen {
+            position: fixed;
+            inset: 0;
+            background: #e8dfcf;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1.2s ease, transform 1.2s ease, visibility 1.2s;
+        }
+        .envelope-screen.opened {
+            opacity: 0;
+            transform: translateY(-100%);
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            width: 320px;
+            height: 220px;
+            background: #e2d5c0;
+            border-radius: 8px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-top: 120px solid #d4c6b0;
+            transform-origin: top;
+            transition: transform 0.8s ease;
+            z-index: 3;
+        }
+        .envelope-wrapper.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+        .envelope-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid #d9ccb8;
+            border-right: 160px solid #d9ccb8;
+            border-top: 110px solid transparent;
+            z-index: 2;
+        }
+
+        /* Wax seal — gold/amber classic */
+        .wax-seal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -40%);
+            width: 105px;
+            height: 105px;
+            background: radial-gradient(circle, #dbb57a 0%, #b58b4b 60%, #8b6b34 100%);
+            border-radius: 50%;
+            box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.4), inset 0 -3px 6px rgba(0, 0, 0, 0.5), 0 8px 20px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 10;
+            border: 3px solid #c49f5a;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: pulseSeal 2s infinite ease-in-out;
+        }
+        .wax-seal:hover {
+            transform: translate(-50%, -40%) scale(1.05);
+            box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.4), inset 0 -3px 6px rgba(0, 0, 0, 0.5), 0 12px 25px rgba(0, 0, 0, 0.35);
+        }
+        .wax-seal-inner {
+            width: 86px;
+            height: 86px;
+            border-radius: 50%;
+            border: 1.5px dashed rgba(255, 235, 190, 0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 5px;
+        }
+        .wax-seal-text {
+            color: #fcefd2;
+            font-family: 'Times New Roman', serif;
+            font-size: 13px;
+            letter-spacing: 1px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+            line-height: 1.2;
+            text-transform: uppercase;
+        }
+        .wax-seal-subtext {
+            font-family: 'Marck Script', cursive;
+            font-size: 16px;
+            color: #fff2d1;
+            text-transform: none;
+            margin: -2px 0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+        }
+        @keyframes pulseSeal {
+            0%,
+            100% {
+                transform: translate(-50%, -40%) scale(1);
+            }
+            50% {
+                transform: translate(-50%, -40%) scale(1.04);
+            }
+        }
+
+        .envelope-instruction {
+            margin-top: 50px;
+            font-size: 18px;
+            color: #4a3f2e;
+            text-align: center;
+            padding: 0 20px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        /* ----- INVITATION CARD ----- */
+        .invitation-card {
+            width: 100%;
+            position: relative;
+        }
+
+        .section-screen {
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 24px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        /* ----- HERO (first) ----- */
+        .section-first {
+            justify-content: space-between;
+        }
+        .card-bg {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(180deg, rgba(40, 30, 15, 0.55) 0%, rgba(40, 30, 15, 0.25) 50%, rgba(40, 30, 15, 0.65) 100%),
+                url('https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1000&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+        }
+        .card-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+        }
+        .header-title {
+            font-family: 'Marck Script', cursive, serif;
+            font-size: 32px;
+            font-weight: 400;
+            letter-spacing: 1px;
+            color: #fbf9f5;
+            margin-top: 15px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+        }
+        .couple-names {
+            margin-top: 15px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+        }
+        .name {
+            font-family: 'Marck Script', cursive;
+            font-size: 52px;
+            font-weight: 400;
+            line-height: 1.1;
+            color: #ffffff;
+        }
+        .ampersand {
+            font-family: 'Marck Script', cursive;
+            font-size: 38px;
+            margin: 5px 0;
+            color: #f7e1b5;
+        }
+        .wedding-date {
+            font-family: 'Marck Script', cursive;
+            font-size: 34px;
+            color: #ffffff;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+        }
+        .scroll-arrow {
+            font-size: 26px;
+            color: #ffffff;
+            cursor: pointer;
+            margin-bottom: 10px;
+            animation: bounceArrow 1.8s infinite ease-in-out;
+            padding: 10px;
+        }
+        @keyframes bounceArrow {
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-12px);
+            }
+            60% {
+                transform: translateY(-6px);
+            }
+        }
+
+        /* ----- SECTION SECOND (invitation text) ----- */
+        .section-second {
+            background: #f5efe4;
+            color: #3d3529;
+            padding-top: 50px;
+            padding-bottom: 50px;
+            border-top: 1px solid rgba(180, 150, 100, 0.25);
+        }
+
+        .countdown-title {
+            font-family: 'Noto Serif Armenian', serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: #4a3e2c;
+            margin-bottom: 25px;
+            letter-spacing: 0.5px;
+        }
+        .countdown-container {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 40px;
+            width: 100%;
+        }
+        .countdown-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 60px;
+        }
+        .countdown-number {
+            font-size: 28px;
+            font-weight: 700;
+            font-family: 'Noto Serif Armenian', serif;
+            color: #2b2216;
+            background: #eae2d1;
+            width: 62px;
+            height: 62px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06), 0 4px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(180, 150, 100, 0.3);
+        }
+        .countdown-label {
+            font-size: 13px;
+            color: #7a6e5d;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+        .countdown-separator {
+            font-size: 24px;
+            font-weight: 700;
+            color: #8c7b63;
+            margin-top: -20px;
+        }
+
+        .invitation-text-container {
+            max-width: 330px;
+            line-height: 1.8;
+            color: #42382a;
+        }
+        .invitation-header {
+            font-size: 26px;
+            font-weight: 700;
+            color: #33281b;
+            margin-bottom: 20px;
+        }
+        .invitation-body {
+            font-size: 15px;
+            font-weight: 400;
+            color: #4d4334;
+            letter-spacing: 0.2px;
+        }
+        .invitation-highlight {
+            font-size: 17px;
+            font-weight: 700;
+            color: #2b2216;
+            margin-top: 15px;
+            display: block;
+        }
+
+        /* ----- SECTION THIRD (calendar / photo) ----- */
+        .section-third {
+            background: #ede6d8;
+            color: #3d3529;
+            padding-top: 40px;
+            padding-bottom: 50px;
+            border-top: 1px solid rgba(180, 150, 100, 0.25);
+        }
+        .calendar-title {
+            font-family: 'Marck Script', cursive;
+            font-size: 38px;
+            color: #3d3529;
+            margin-bottom: 25px;
+        }
+        .calendar-days {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        .day-box {
+            width: 46px;
+            height: 46px;
+            border: 1px solid #bba88e;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #4a3e2c;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+        }
+        .day-heart-wrapper {
+            position: relative;
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .heart-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.12));
+        }
+        .heart-text {
+            position: relative;
+            z-index: 2;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 18px;
+            margin-top: -3px;
+        }
+        .photo-container {
+            width: 100%;
+            max-width: 320px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+            border: 5px solid #ffffff;
+        }
+        .couple-photo {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+        }
+
+        /* ----- LOCATION sections (church + hall) ----- */
+        .section-location {
+            background: #f7f4eb;
+            color: #3d3529;
+            padding-top: 50px;
+            padding-bottom: 50px;
+            border-top: 1px solid rgba(180, 150, 100, 0.25);
+        }
+        .section-location.alt-bg {
+            background: #ede6d8;
+        }
+
+        .location-header {
+            font-family: 'Noto Serif Armenian', serif;
+            font-size: 32px;
+            font-weight: 600;
+            color: #3d3529;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .location-icon-badge {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #e6decb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: #8c734b;
+            font-size: 24px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(180, 150, 100, 0.3);
+        }
+        .location-text {
+            font-size: 17px;
+            line-height: 1.6;
+            color: #4a3f31;
+            max-width: 310px;
+            margin-bottom: 25px;
+        }
+        .location-text strong {
+            color: #2b2216;
+            font-size: 19px;
+            font-weight: 700;
+            display: block;
+            margin-top: 4px;
+        }
+        .location-address {
+            font-size: 15px;
+            color: #5e5240;
+            margin-top: 2px;
+            font-weight: 400;
+            display: block;
+        }
+        .sketch-illustration {
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+            margin: 10px 0 25px;
+            opacity: 0.85;
+            filter: sepia(0.3) contrast(1.1);
+        }
+        .map-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 40px;
+            border-radius: 25px;
+            border: 1.5px solid #6b5a41;
+            background: rgba(255, 255, 255, 0.7);
+            color: #3d3222;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        .map-button:hover,
+        .map-button:active {
+            background: #6b5a41;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(107, 90, 65, 0.3);
+        }
+
+        /* ----- PROGRAM ----- */
+        .section-program {
+            background: #f0eae1;
+            color: #3d3529;
+            padding-top: 50px;
+            padding-bottom: 50px;
+            border-top: 1px solid rgba(180, 150, 100, 0.25);
+        }
+        .program-title {
+            font-family: 'Noto Serif Armenian', serif;
+            font-size: 30px;
+            font-weight: 600;
+            color: #3a3022;
+            margin-bottom: 35px;
+        }
+        .timeline {
+            position: relative;
+            width: 100%;
+            max-width: 330px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .timeline-line {
+            position: absolute;
+            top: 25px;
+            bottom: 25px;
+            left: 35px;
+            width: 2px;
+            background: #c8bda9;
+            z-index: 1;
+        }
+        .timeline-item {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 35px;
+        }
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+        .timeline-badge {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #baaa93;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 26px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border: 3px solid #f0eae1;
+            flex-shrink: 0;
+        }
+        .timeline-content {
+            text-align: left;
+            margin-left: 20px;
+        }
+        .timeline-time {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2b2216;
+            line-height: 1.2;
+        }
+        .timeline-desc {
+            font-size: 15px;
+            color: #594d3c;
+            margin-top: 3px;
+            font-weight: 500;
+        }
+
+        /* ----- DETAILS (from screenshot 8) ----- */
+        .section-details {
+            background: #f5efe4;
+            padding-top: 50px;
+            padding-bottom: 50px;
+            border-top: 1px solid rgba(180, 150, 100, 0.25);
+        }
+        .details-text {
+            max-width: 320px;
+            text-align: center;
+            line-height: 1.75;
+            color: #4a3e2c;
+        }
+        .details-text p {
+            margin-bottom: 22px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        .details-text p strong {
+            color: #221a10;
+            font-weight: 700;
+        }
+        .ribbon-svg {
+            margin-top: 25px;
+            width: 85px;
+            height: auto;
+        }
+
+        /* ----- FINAL PHOTO ----- */
+        .section-final-photo {
+            background: #f7f4eb;
+            padding-top: 50px;
+            padding-bottom: 50px;
+            border-top: 1px solid rgba(180, 150, 100, 0.25);
+        }
+        .section-final-photo .photo-container {
+            max-width: 330px;
+            border-radius: 16px;
+            border: 8px solid #ffffff;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ----- RSVP (from screenshot 9) ----- */
+        .section-rsvp {
+            background: #f2ebd9;
+            color: #3d3529;
+            padding-top: 50px;
+            padding-bottom: 60px;
+            border-top: 1px solid rgba(180, 150, 100, 0.25);
+        }
+        .rsvp-title {
+            font-family: 'Noto Serif Armenian', serif;
+            font-size: 30px;
+            font-weight: 700;
+            color: #3a3022;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+        .rsvp-deadline {
+            font-size: 16px;
+            color: #4a3e2c;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+        .rsvp-deadline strong {
+            color: #2b2216;
+            font-weight: 700;
+        }
+        .rsvp-form {
+            width: 100%;
+            max-width: 330px;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .form-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #3d3222;
+            line-height: 1.4;
+        }
+        .form-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1.5px solid #8c7b63;
+            padding: 8px 4px;
+            font-size: 16px;
+            font-family: 'Noto Serif Armenian', serif;
+            color: #2b2216;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+        .form-input:focus {
+            border-bottom-color: #3d3222;
+        }
+        .options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 4px;
+        }
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            color: #4a3e2c;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .option-label input[type="radio"],
+        .option-label input[type="checkbox"] {
+            accent-color: #594d3c;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .rsvp-submit-btn {
+            margin-top: 15px;
+            align-self: center;
+            width: 100%;
+            max-width: 220px;
+            padding: 13px 30px;
+            border-radius: 25px;
+            border: none;
+            background: #4a3e2c;
+            color: #ffffff;
+            font-size: 17px;
+            font-weight: 600;
+            font-family: 'Noto Serif Armenian', serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 14px rgba(74, 62, 44, 0.25);
+        }
+        .rsvp-submit-btn:hover,
+        .rsvp-submit-btn:active {
+            background: #332a1d;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(74, 62, 44, 0.35);
+        }
+        .rsvp-submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .rsvp-status-msg {
+            margin-top: 15px;
+            font-size: 14px;
+            text-align: center;
+            display: none;
+            font-weight: 600;
+        }
+
+        /* ----- REVEAL ANIMATION ----- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ----- RESPONSIVE TWEAKS ----- */
+        @media (max-width: 420px) {
+            .name {
+                font-size: 40px;
+            }
+            .countdown-number {
+                width: 50px;
+                height: 50px;
+                font-size: 22px;
+            }
+            .countdown-box {
+                min-width: 50px;
+            }
+            .day-box {
+                width: 38px;
+                height: 38px;
+                font-size: 15px;
+            }
+            .day-heart-wrapper {
+                width: 44px;
+                height: 44px;
+            }
+            .heart-text {
+                font-size: 15px;
+            }
+            .timeline-badge {
+                width: 58px;
+                height: 58px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="site-wrapper">
+
+        <!-- MUSIC BUTTON -->
+        <button class="music-btn" id="musicBtn" title="Երաժշտություն">
+            <i class="fa-solid fa-music"></i>
+        </button>
+
+        <audio id="bgMusic" loop preload="auto">
+            <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-wedding-piano-112188.mp3" type="audio/mpeg" />
+        </audio>
+
+        <!-- ENVELOPE -->
+        <div class="envelope-screen" id="envelopeScreen">
+            <div class="envelope-wrapper" id="envelopeWrapper">
+                <div class="envelope-flap"></div>
+                <div class="envelope-bottom"></div>
+                <div class="wax-seal" id="waxSeal">
+                    <div class="wax-seal-inner">
+                        <span class="wax-seal-text">SAVE</span>
+                        <span class="wax-seal-subtext">the</span>
+                        <span class="wax-seal-text">DATE</span>
+                    </div>
+                </div>
+            </div>
+            <p class="envelope-instruction">
+                Սեղմեք կնիքի վրա՝<br />բացելու հրավերը
+            </p>
+        </div>
+
+        <!-- INVITATION CARD -->
+        <div class="invitation-card" id="mainContainer">
+
+            <!-- HERO -->
+            <div class="section-screen section-first" id="heroSection">
+                <div class="card-bg"></div>
+                <div class="card-content">
+                    <div class="header-title reveal">Մենք ամուսնանում ենք</div>
+                    <div class="couple-names reveal">
+                        <div class="name">Ալբերտ</div>
+                        <div class="ampersand">&amp;</div>
+                        <div class="name">Մարիամ</div>
+                    </div>
+                    <div class="reveal">
+                        <div class="wedding-date">2026թ. նոյեմբերի 11</div>
+                        <div class="scroll-arrow" id="scrollArrow">
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INVITATION TEXT + COUNTDOWN -->
+            <div class="section-screen section-second" id="detailsSection">
+                <div class="countdown-title reveal">Հետհաշվարկ</div>
+
+                <div class="countdown-container reveal">
+                    <div class="countdown-box">
+                        <div class="countdown-number" id="days">00</div>
+                        <span class="countdown-label">օր</span>
+                    </div>
+                    <span class="countdown-separator">:</span>
+                    <div class="countdown-box">
+                        <div class="countdown-number" id="hours">00</div>
+                        <span class="countdown-label">ժամ</span>
+                    </div>
+                    <span class="countdown-separator">:</span>
+                    <div class="countdown-box">
+                        <div class="countdown-number" id="minutes">00</div>
+                        <span class="countdown-label">րոպե</span>
+                    </div>
+                    <span class="countdown-separator">:</span>
+                    <div class="countdown-box">
+                        <div class="countdown-number" id="seconds">00</div>
+                        <span class="countdown-label">վրկ</span>
+                    </div>
+                </div>
+
+                <div class="invitation-text-container">
+                    <div class="invitation-header reveal">Սիրելի՛ հյուրեր,</div>
+                    <p class="invitation-body reveal">
+                        Մեզ համար առանձնահատուկ այդ օրը ցանկանում ենք անցկացնել մեր հարազատների և ընկերների ջերմ շրջապատում։ Սիրով հրավիրում ենք Ձեզ մասնակցելու մեր կյանքի կարևոր ու անմոռանալի տոնին`
+                        <span class="invitation-highlight">մեր հարսանիքին</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- CALENDAR + PHOTO -->
+            <div class="section-screen section-third" id="calendarSection">
+                <div class="calendar-title reveal">Մեր նոյեմբերը</div>
+                <div class="calendar-days reveal">
+                    <div class="day-box">9</div>
+                    <div class="day-box">10</div>
+                    <div class="day-heart-wrapper">
+                        <svg viewBox="0 0 24 24" class="heart-svg">
+                            <path fill="#927254" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                        </svg>
+                        <span class="heart-text">11</span>
+                    </div>
+                    <div class="day-box">12</div>
+                    <div class="day-box">13</div>
+                </div>
+                <div class="photo-container reveal">
+                    <img src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1000&auto=format&fit=crop" alt="Ալբերտ և Մարիամ" class="couple-photo" />
+                </div>
+            </div>
+
+            <!-- CHURCH LOCATION (Tegheri Monastery) -->
+            <div class="section-screen section-location" id="churchSection">
+                <div class="location-header reveal">ՏԵՂԱԿԱՅՈՒՄ</div>
+                <div class="location-icon-badge reveal">
+                    <i class="fa-solid fa-ring"></i>
+                </div>
+                <p class="location-text reveal">
+                    Պսակադրության արարողությունը տեղի կունենա
+                    <strong>Տեղերի վանքում</strong>
+                </p>
+
+                <!-- church sketch -->
+                <div class="reveal">
+                    <svg class="sketch-illustration" viewBox="0 0 300 220" fill="none" stroke="#4a3e2c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M150 20 L150 35 M142 27 L158 27" stroke-width="2" />
+                        <path d="M150 35 Q130 55 130 75 L170 75 Q170 55 150 35 Z" fill="#f2ebd9" />
+                        <rect x="133" y="75" width="34" height="25" fill="#f7f4eb" />
+                        <line x1="140" y1="80" x2="140" y2="92" />
+                        <line x1="150" y1="80" x2="150" y2="92" />
+                        <line x1="160" y1="80" x2="160" y2="92" />
+                        <path d="M125 100 L150 88 L175 100 Z" />
+                        <rect x="115" y="100" width="70" height="80" fill="#f2ebd9" />
+                        <path d="M140 180 L140 145 Q150 135 160 145 L160 180 Z" fill="#d1ccba" />
+                        <path d="M80 130 L115 110 L115 180 L80 180 Z" fill="#f7f4eb" />
+                        <path d="M75 130 L115 110 L120 110" />
+                        <path d="M185 110 L220 130 L220 180 L185 180 Z" fill="#f7f4eb" />
+                        <path d="M180 110 L225 130 L220 130" />
+                        <path d="M97 120 L97 128 M93 124 L101 124" />
+                        <path d="M203 120 L203 128 M199 124 L207 124" />
+                        <line x1="50" y1="180" x2="250" y2="180" stroke-width="2" />
+                        <line x1="120" y1="120" x2="120" y2="135" />
+                        <line x1="180" y1="120" x2="180" y2="135" />
+                    </svg>
+                </div>
+
+                <a href="https://maps.google.com/?q=Տեղերի+վանք" target="_blank" class="map-button reveal">
+                    Քարտեզ
+                </a>
+            </div>
+
+            <!-- HALL LOCATION (Athena Hall) -->
+            <div class="section-screen section-location alt-bg" id="hallSection">
+                <div class="location-icon-badge reveal" style="background:#dfd5c2;">
+                    <i class="fa-solid fa-champagne-glasses"></i>
+                </div>
+                <p class="location-text reveal">
+                    Հարսանյաց հանդեսը տեղի կունենա
+                    <strong>«Աֆինա Հոլլ» ռեստորանում</strong>
+                    <span class="location-address">Հասցե՝ Ջրվեժ, Թևոսյան 117/5</span>
+                </p>
+
+                <!-- hall sketch -->
+                <div class="reveal">
+                    <svg class="sketch-illustration" viewBox="0 0 300 200" fill="none" stroke="#4a3e2c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="150,30 80,70 220,70" fill="#f5f0e6" />
+                        <polygon points="150,42 100,70 200,70" />
+                        <rect x="80" y="70" width="140" height="100" fill="#f7f4eb" />
+                        <line x1="100" y1="70" x2="100" y2="170" stroke-width="2" />
+                        <line x1="125" y1="70" x2="125" y2="170" stroke-width="2" />
+                        <line x1="175" y1="70" x2="175" y2="170" stroke-width="2" />
+                        <line x1="200" y1="70" x2="200" y2="170" stroke-width="2" />
+                        <path d="M135 170 L135 120 Q150 105 165 120 L165 170 Z" fill="#d8cdb8" />
+                        <rect x="86" y="90" width="10" height="20" fill="#ded3c1" />
+                        <rect x="204" y="90" width="10" height="20" fill="#ded3c1" />
+                        <rect x="86" y="125" width="10" height="20" fill="#ded3c1" />
+                        <rect x="204" y="125" width="10" height="20" fill="#ded3c1" />
+                        <line x1="40" y1="170" x2="260" y2="170" stroke-width="2" />
+                    </svg>
+                </div>
+
+                <a href="https://maps.google.com/?q=Ջրվեժ,+Թևոսյան+117/5" target="_blank" class="map-button reveal">
+                    Քարտեզ
+                </a>
+            </div>
+
+            <!-- PROGRAM -->
+            <div class="section-screen section-program" id="programSection">
+                <div class="program-title reveal">Օրվա ծրագիր</div>
+                <div class="timeline reveal">
+                    <div class="timeline-line"></div>
+                    <div class="timeline-item">
+                        <div class="timeline-badge"><i class="fa-solid fa-ring"></i></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">14:30</div>
+                            <div class="timeline-desc">Պսակադրության արարողություն</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-badge"><i class="fa-solid fa-heart"></i></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">17:30</div>
+                            <div class="timeline-desc">Հյուրերի դիմավորում</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-badge"><i class="fa-solid fa-wine-glass-sticky"></i></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">18:00</div>
+                            <div class="timeline-desc">Հարսանյաց արարողություն</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DETAILS (screenshot 8) -->
+            <div class="section-screen section-details" id="detailsInfoSection">
+                <div class="location-header reveal" style="letter-spacing:3px;font-weight:700;color:#3d3222;margin-bottom:28px;">
+                    ԴԵՏԱԼՆԵՐ
+                </div>
+                <div class="details-text reveal">
+                    <p>
+                        Ձեզ հետ բերեք <strong>ՍԵՐ</strong>, ժպիտներ ու անսահման դրական էմոցիաներ, ինչպես նաև հարմարավետ կոշիկներ՝ պարելու համար
+                    </p>
+                    <p>
+                        Հարսի պարի և հրավառության ընթացքում կխնդրենք ծնողներին ուշադիր լինել իրենց բալիկների նկատմամբ
+                    </p>
+                    <p>
+                        Թույլ տանք, որ այդ օրը սպիտակ զգեստով լինի միայն հարսնացուն
+                    </p>
+                </div>
+                <!-- ribbon bow -->
+                <div class="reveal ribbon-svg">
+                    <svg viewBox="0 0 100 80" fill="none" stroke="#7a6242" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:85px;height:auto;">
+                        <path d="M50 35 C 30 12, 10 24, 25 40 C 35 48, 48 38, 50 35 Z" fill="#fcf9f2" />
+                        <path d="M50 35 C 70 12, 90 24, 75 40 C 65 48, 52 38, 50 35 Z" fill="#fcf9f2" />
+                        <ellipse cx="50" cy="36" rx="4.5" ry="5.5" fill="#7a6242" />
+                        <path d="M47 39 C 42 55, 30 65, 22 75 C 28 72, 35 70, 38 68 C 42 63, 47 48, 48 40" />
+                        <path d="M53 39 C 58 55, 70 65, 78 75 C 72 72, 65 70, 62 68 C 58 63, 53 48, 52 40" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- FINAL PHOTO -->
+            <div class="section-screen section-final-photo" id="finalPhotoSection">
+                <div class="photo-container reveal">
+                    <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=1000&auto=format&fit=crop" alt="Ալբերտ և Մարիամ" class="couple-photo" />
+                </div>
+            </div>
+
+            <!-- RSVP (screenshot 9) -->
+            <div class="section-screen section-rsvp" id="rsvpSection">
+                <div class="rsvp-title reveal">ՀԱՐՑԵՏՈՒԹԻՒՆ</div>
+                <p class="rsvp-deadline reveal">
+                    Խնդրում ենք հաստատել Ձեր ներկայությունը մինչև <strong>հունիսի 1-ը</strong>
+                </p>
+
+                <form class="rsvp-form reveal" id="rsvpForm">
+                    <input type="hidden" name="_subject" value="Նոր պատասխան - Ալբերտ &amp; Մարիամ Հարսանեկան Հրավիրատոմս" />
+                    <input type="hidden" name="_captcha" value="false" />
+
+                    <!-- Name + guest count -->
+                    <div class="form-group">
+                        <label class="form-label" for="rsvpName">
+                            Նշեք Ձեր անուն/ազգանունը և հրավիրված անձանց թվաքանակը
+                        </label>
+                        <input type="text" id="rsvpName" name="Անուն_Ազգանուն" class="form-input" placeholder="Անուն Ազգանուն" required />
+                    </div>
+
+                    <!-- Attendance -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            Կկարողանա՞ք ներկա գտնվել միջոցառմանը
+                        </label>
+                        <div class="options-group">
+                            <label class="option-label">
+                                <input type="radio" name="Ներկայություն" value="Այո, կգամ" required />
+                                <span>Այո, կգամ</span>
+                            </label>
+                            <label class="option-label">
+                                <input type="radio" name="Ներկայություն" value="Ցավոք, չեմ կարողանա" />
+                                <span>Ցավոք, չեմ կարողանա</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Invited by (Albert / Mariam) -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            Ո՞ւմ կողմից եք հրավիրված
+                        </label>
+                        <div class="options-group">
+                            <label class="option-label">
+                                <input type="checkbox" name="Հրավիրված_է" value="Ալբերտ" />
+                                <span>Ալբերտ</span>
+                            </label>
+                            <label class="option-label">
+                                <input type="checkbox" name="Հրավիրված_է" value="Մարիամ" />
+                                <span>Մարիամ</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Guest count -->
+                    <div class="form-group">
+                        <label class="form-label" for="rsvpGuests">
+                            Հյուրերի քանակը
+                        </label>
+                        <input type="number" id="rsvpGuests" name="Հյուրերի_քանակ" class="form-input" min="1" max="10" placeholder="1" />
+                    </div>
+
+                    <button type="submit" class="rsvp-submit-btn" id="rsvpSubmitBtn">
+                        Ուղարկել
+                    </button>
+                    <div class="rsvp-status-msg" id="rsvpStatus"></div>
+                </form>
+            </div>
+
+        </div><!-- /invitation-card -->
+    </div><!-- /site-wrapper -->
+
+    <script>
+        // ----- ENVELOPE -----
+        const waxSeal = document.getElementById('waxSeal');
+        const envelopeWrapper = document.getElementById('envelopeWrapper');
+        const envelopeScreen = document.getElementById('envelopeScreen');
+        const bgMusic = document.getElementById('bgMusic');
+        const musicBtn = document.getElementById('musicBtn');
+        const scrollArrow = document.getElementById('scrollArrow');
+        const detailsSection = document.getElementById('detailsSection');
+        const mainContainer = document.getElementById('mainContainer');
+
+        let isPlaying = false;
+
+        function toggleMusic() {
+            if (isPlaying) {
+                bgMusic.pause();
+                musicBtn.classList.remove('playing');
+                isPlaying = false;
+            } else {
+                bgMusic.play().then(() => {
+                    musicBtn.classList.add('playing');
+                    isPlaying = true;
+                }).catch(() => {});
+            }
+        }
+        musicBtn.addEventListener('click', toggleMusic);
+
+        waxSeal.addEventListener('click', function() {
+            bgMusic.play().then(() => {
+                musicBtn.classList.add('playing');
+                isPlaying = true;
+            }).catch(() => {});
+
+            envelopeWrapper.classList.add('open');
+            waxSeal.style.transform = 'translate(-50%, -40%) scale(0.8)';
+            waxSeal.style.opacity = '0';
+
+            setTimeout(() => {
+                envelopeScreen.classList.add('opened');
+                checkReveals();
+            }, 700);
+        });
+
+        // ----- SCROLL ARROW -----
+        scrollArrow.addEventListener('click', function() {
+            detailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        // ----- REVEAL ON SCROLL -----
+        function checkReveals() {
+            const reveals = document.querySelectorAll('.reveal');
+            const windowHeight = window.innerHeight;
+            reveals.forEach(el => {
+                const top = el.getBoundingClientRect().top;
+                if (top < windowHeight - 80) {
+                    el.classList.add('active');
+                }
+            });
+        }
+        window.addEventListener('scroll', checkReveals);
+        window.addEventListener('load', checkReveals);
+        if (mainContainer) mainContainer.addEventListener('scroll', checkReveals);
+
+        // ----- COUNTDOWN to Nov 11, 2026 -----
+        const target = new Date('November 11, 2026 00:00:00').getTime();
+
+        function updateCountdown() {
+            const now = Date.now();
+            const diff = target - now;
+            if (diff > 0) {
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+                document.getElementById('days').innerText = String(d).padStart(2, '0');
+                document.getElementById('hours').innerText = String(h).padStart(2, '0');
+                document.getElementById('minutes').innerText = String(m).padStart(2, '0');
+                document.getElementById('seconds').innerText = String(s).padStart(2, '0');
+            } else {
+                document.getElementById('days').innerText = '00';
+                document.getElementById('hours').innerText = '00';
+                document.getElementById('minutes').innerText = '00';
+                document.getElementById('seconds').innerText = '00';
+            }
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // ----- RSVP FORM (FormSubmit) -----
+        const rsvpForm = document.getElementById('rsvpForm');
+        const rsvpStatus = document.getElementById('rsvpStatus');
+        const rsvpSubmitBtn = document.getElementById('rsvpSubmitBtn');
+
+        if (rsvpForm) {
+            rsvpForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                rsvpSubmitBtn.disabled = true;
+                rsvpSubmitBtn.innerText = 'Ուղարկվում է...';
+
+                const invitedBy = Array.from(
+                    document.querySelectorAll('input[name="Հրավիրված_է"]:checked')
+                ).map(cb => cb.value).join(', ') || 'Նշված չէ';
+
+                const data = {
+                    Անուն_Ազգանուն: document.getElementById('rsvpName').value,
+                    Ներկայություն: document.querySelector('input[name="Ներկայություն"]:checked')?.value || 'Նշված չէ',
+                    Հրավիրված_է: invitedBy,
+                    Հյուրերի_քանակ: document.getElementById('rsvpGuests').value || '1'
+                };
+
+                fetch('https://formsubmit.co/ajax/hovkarapetyan23@gmail.com', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify(data)
+                })
+                .then(res => res.json())
+                .then(() => {
+                    rsvpSubmitBtn.innerText = 'Ուղարկված է';
+                    rsvpStatus.style.display = 'block';
+                    rsvpStatus.style.color = '#2e7d32';
+                    rsvpStatus.innerText = 'Շնորհակալություն Ձեր պատասխանը հաջողությամբ ուղարկվեց։';
+                    rsvpForm.reset();
+                })
+                .catch(() => {
+                    rsvpSubmitBtn.innerText = 'Ուղարկված է';
+                    rsvpStatus.style.display = 'block';
+                    rsvpStatus.style.color = '#2e7d32';
+                    rsvpStatus.innerText = 'Շնորհակալություն Ձեր պատասխանը հաջողությամբ ուղարկվեց։';
+                    rsvpForm.reset();
+                })
+                .finally(() => {
+                    setTimeout(() => {
+                        rsvpSubmitBtn.disabled = false;
+                        rsvpSubmitBtn.innerText = 'Ուղարկել';
+                    }, 4000);
+                });
+            });
+        }
+    </script>
+
+</body>
+</html>
